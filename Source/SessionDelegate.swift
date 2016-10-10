@@ -103,24 +103,6 @@ open class SessionDelegate: NSObject {
     /// Overrides default behavior for URLSessionDownloadDelegate method `urlSession(_:downloadTask:didResumeAtOffset:expectedTotalBytes:)`.
     open var downloadTaskDidResumeAtOffset: ((URLSession, URLSessionDownloadTask, Int64, Int64) -> Void)?
 
-    // MARK: URLSessionStreamDelegate Overrides
-
-#if !os(watchOS)
-
-    /// Overrides default behavior for URLSessionStreamDelegate method `urlSession(_:readClosedFor:)`.
-    open var streamTaskReadClosed: ((URLSession, URLSessionStreamTask) -> Void)?
-
-    /// Overrides default behavior for URLSessionStreamDelegate method `urlSession(_:writeClosedFor:)`.
-    open var streamTaskWriteClosed: ((URLSession, URLSessionStreamTask) -> Void)?
-
-    /// Overrides default behavior for URLSessionStreamDelegate method `urlSession(_:betterRouteDiscoveredFor:)`.
-    open var streamTaskBetterRouteDiscovered: ((URLSession, URLSessionStreamTask) -> Void)?
-
-    /// Overrides default behavior for URLSessionStreamDelegate method `urlSession(_:streamTask:didBecome:outputStream:)`.
-    open var streamTaskDidBecomeInputAndOutputStreams: ((URLSession, URLSessionStreamTask, InputStream, OutputStream) -> Void)?
-
-#endif
-
     // MARK: Properties
 
     var retrier: RequestRetrier?
@@ -162,21 +144,6 @@ open class SessionDelegate: NSObject {
         #if !os(macOS)
             if selector == #selector(URLSessionDelegate.urlSessionDidFinishEvents(forBackgroundURLSession:)) {
                 return sessionDidFinishEventsForBackgroundURLSession != nil
-            }
-        #endif
-
-        #if !os(watchOS)
-            switch selector {
-            case #selector(URLSessionStreamDelegate.urlSession(_:readClosedFor:)):
-                return streamTaskReadClosed != nil
-            case #selector(URLSessionStreamDelegate.urlSession(_:writeClosedFor:)):
-                return streamTaskWriteClosed != nil
-            case #selector(URLSessionStreamDelegate.urlSession(_:betterRouteDiscoveredFor:)):
-                return streamTaskBetterRouteDiscovered != nil
-            case #selector(URLSessionStreamDelegate.urlSession(_:streamTask:didBecome:outputStream:)):
-                return streamTaskDidBecomeInputAndOutputStreams != nil
-            default:
-                break
             }
         #endif
 
